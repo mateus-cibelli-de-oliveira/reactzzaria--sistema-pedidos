@@ -1,12 +1,15 @@
-import { createContext, useEffect, useState, useCallback, useMemo } from "react";
-import t from "prop-types";
 import {
-  auth,
+  createContext, useEffect, useState, useCallback, useMemo
+} from "react";
+import t from "prop-types";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import {
   GithubAuthProvider,
   signInWithPopup,
   onAuthStateChanged,
-  signOut
-} from "@/services/firebase";
+  signOut,
+} from "firebase/auth";
+import { authPedidos, dbPedidos } from "@/services/firebase";
 
 const AuthContext = createContext();
 
@@ -16,7 +19,7 @@ function AuthProvider({ children }) {
 
   // Listener de autenticação (login e logout)
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(authPedidos, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
     });
@@ -24,29 +27,49 @@ function AuthProvider({ children }) {
     return () => unsubscribe();
   }, []);
 
-  // Login com GitHub
+  // Criação do usuário no Firestore (se não existir)
+  useEffect(() => {
+    if (!user) return;
+
+    const createUserIfNotExists = async () => {
+      const userRef = doc(dbPedidos, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) return;
+
+      await setDoc(userRef, {
+        email: user.email,
+        name: user.displayName,
+        role: "user",
+      });
+    };
+
+    createUserIfNotExists();
+  }, [user]);
+
+  // Login com GitHub usando popup
   const loginWithGitHub = useCallback(async () => {
     const provider = new GithubAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(authPedidos, provider);
+      setUser(result.user); // atualiza o usuário imediatamente
     } catch (error) {
-      console.error("Erro no login:", error);
+      console.error("Erro no login com popup:", error);
     }
   }, []);
 
   // Logout
   const logout = useCallback(async () => {
     try {
-      await signOut(auth);
+      await signOut(authPedidos);
+      setUser(null);
     } catch (error) {
       console.error("Erro no logout:", error);
     }
   }, []);
 
-  // Nome formatado do usuário
-  const firstName = useMemo(() => {
-    return user?.displayName?.split(" ")[0] ?? "";
-  }, [user]);
+  // Primeiro nome do usuário
+  const firstName = useMemo(() => user?.displayName?.split(" ")[0] ?? "", [user]);
 
   return (
     <AuthContext.Provider
@@ -67,4 +90,4 @@ AuthProvider.propTypes = {
   children: t.node.isRequired
 }
 
-export { AuthProvider, AuthContext }
+export { AuthProvider, AuthContext };

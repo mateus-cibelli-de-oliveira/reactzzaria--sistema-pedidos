@@ -3,7 +3,7 @@ import t from "prop-types";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "@/hooks";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "@/services/firebase";
+import { dbPedidos } from "@/services/firebase";
 
 const OrderContext = createContext();
 
@@ -48,7 +48,7 @@ function OrderProvider({ children }) {
       });
 
 
-      await addDoc(collection(db, "orders"), {
+      await addDoc(collection(dbPedidos, "orders"), {
         userId: user.uid,
         createdAt: serverTimestamp(),
         address,

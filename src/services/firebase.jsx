@@ -1,15 +1,9 @@
 import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  GithubAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged,
-  signOut,
-} from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 // Configuração Firebase
-const firebaseConfig = {
+const firebaseConfigPedidos = {
   apiKey: import.meta.env.VITE_API_KEY,
   authDomain: import.meta.env.VITE_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_PROJECT_ID,
@@ -19,20 +13,11 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_MEASUREMENT_ID
 }
 
-// Inicializa apenas uma vez
-const app = initializeApp(firebaseConfig);
+// Inicializa o app Firebase nomeado "pedidos"
+const appPedidos =
+  getApps().find(app => app.name === "pedidos") ??
+  initializeApp(firebaseConfigPedidos, "pedidos");
 
-// Instância de autenticação
-const auth = getAuth(app);
-
-// Exportações para uso na aplicação
-export {
-  auth,
-  GithubAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged,
-  signOut,
-}
-
-// Firestore da aplicação
-export const db = getFirestore(app);
+// Exporta instâncias isoladas
+export const authPedidos = getAuth(appPedidos);
+export const dbPedidos = getFirestore(appPedidos);
