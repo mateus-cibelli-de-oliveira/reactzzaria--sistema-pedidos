@@ -41,12 +41,15 @@ const ChoosePizzaSize = () => {
       </Grid>
 
       <PizzasGrid>
-        {pizzasSizes.map((pizza) => (
+        {pizzasSizes.map((pizza, index) => (
           <Grid item key={pizza.id} xs>
             <Card>
               <CardLink
                 to={CHOOSE_PIZZA_FLAVOURS}
-                state={pizza}
+                state={{
+                  ...pizza,
+                  sizeIndex: index
+                }}
               >
                 <Pizza>
                   <PizzaText>{pizza.size}cm</PizzaText>

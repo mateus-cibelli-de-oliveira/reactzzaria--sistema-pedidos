@@ -12,8 +12,7 @@ import Logo from "./logo";
 
 function HeaderCommon() {
   const [AnchorElement, setAnchorElement] = useState(null);
-  const { firstName } = useAuth();
-  const { logout } = useAuth();
+  const { firstName, logout } = useAuth();
 
   const handleOpenMenu = (e) => {
     setAnchorElement(e.target);

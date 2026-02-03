@@ -1,4 +1,5 @@
 export * from "./typography";
+export * from "./buttons";
 export { default as HeaderContent } from "./header-content";
 export { default as PizzasGrid } from "./pizzas-grid";
 export { default as Divider } from "./divider";

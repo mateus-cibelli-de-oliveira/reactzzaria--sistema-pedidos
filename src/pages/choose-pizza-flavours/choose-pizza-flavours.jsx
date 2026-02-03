@@ -35,7 +35,7 @@ const ChoosePizzaFlavours = () => {
     return "Não há dados."
   }
 
-  const { flavours, id } = location.state;
+  const { flavours, sizeIndex } = location.state;
 
   const handleChangeCheckbox = (pizzaId) => (e) => {
     if (checkboxesChecked(checkboxes) === flavours && e.target.checked) {
@@ -74,7 +74,7 @@ const ChoosePizzaFlavours = () => {
 
                   <PizzaName>{pizza.name}</PizzaName>
                   <Typography variant="h5">
-                    {toMoney(pizza.value[id])}
+                    {toMoney(pizza.value?.[sizeIndex] ?? 0)}
                   </Typography>
                 </Label>
               </Card>
