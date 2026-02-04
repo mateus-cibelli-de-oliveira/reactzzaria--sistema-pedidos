@@ -15,15 +15,13 @@ function Root() {
   return (
     <MuiThemeProvider theme={theme}>
       <ThemeProvider theme={theme}>
-        <AuthProvider>
-          <OrderProvider>
+        <BrowserRouter>
+          <AuthProvider>
             <CssBaseline />
             <GlobalStyle />
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
-          </OrderProvider>
-        </AuthProvider>
+            <App />
+          </AuthProvider>
+        </BrowserRouter>
       </ThemeProvider>
     </MuiThemeProvider>
   );
