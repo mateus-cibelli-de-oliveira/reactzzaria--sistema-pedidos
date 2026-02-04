@@ -25,66 +25,70 @@ function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Listener global de autenticação
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(authPedidos, async (currentUser) => {
-      setUser(currentUser);
+      try {
+        setUser(currentUser);
 
-      // Usuário deslogado
-      if (!currentUser) {
-        setProfile(null);
-        setLoading(false);
-        return;
-      }
-
-      // Busca perfil no Firestore
-      const userRef = doc(dbPedidos, "users", currentUser.uid);
-      const userSnap = await getDoc(userRef);
-
-      if (userSnap.exists()) {
-        setProfile(userSnap.data());
-      } else {
-        // Fallback (caso extremo)
-        const fallbackProfile = {
-          name: currentUser.displayName ?? "",
-          email: currentUser.email,
-          role: "user"
+        if (!currentUser) {
+          setProfile(null);
+          setLoading(false);
+          return;
         }
 
-        await setDoc(userRef, fallbackProfile);
-        setProfile(fallbackProfile);
-      }
+        const userRef = doc(dbPedidos, "users", currentUser.uid);
+        const userSnap = await getDoc(userRef);
 
-      setLoading(false);
+        if (userSnap.exists()) {
+          setProfile(userSnap.data());
+        } else {
+          const fallbackProfile = {
+            name: currentUser.displayName ?? "",
+            email: currentUser.email,
+            role: "user"
+          }
+
+          await setDoc(userRef, fallbackProfile);
+          setProfile(fallbackProfile);
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error("ERRO AO CARREGAR PERFIL DO USUÁRIO:", error);
+        setProfile(null);
+        setLoading(false);
+      }
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Garante usuário no Firestore (ex: login via GitHub)
   useEffect(() => {
     if (!user) return;
 
     const createUserIfNotExists = async () => {
-      const userRef = doc(dbPedidos, "users", user.uid);
-      const userSnap = await getDoc(userRef);
+      try {
+        const userRef = doc(dbPedidos, "users", user.uid);
+        const userSnap = await getDoc(userRef);
 
-      if (userSnap.exists()) return;
+        if (userSnap.exists()) return;
 
-      const newProfile = {
-        email: user.email,
-        name: user.displayName ?? "",
-        role: "user",
-      };
+        const newProfile = {
+          email: user.email,
+          name: user.displayName ?? "",
+          role: "user",
+        };
 
-      await setDoc(userRef, newProfile);
-      setProfile(newProfile);
+        await setDoc(userRef, newProfile);
+        setProfile(newProfile);
+      } catch (error) {
+        console.error("ERRO AO CRIAR PERFIL DO USUÁRIO:", error);
+      }
     };
 
     createUserIfNotExists();
   }, [user]);
 
-  // Login com GitHub
   const loginWithGitHub = useCallback(async () => {
     try {
       const provider = new GithubAuthProvider();
@@ -95,21 +99,15 @@ function AuthProvider({ children }) {
     }
   }, []);
 
-  // Login com email e senha
   const loginWithEmail = useCallback(async (email, password) => {
     try {
-      await signInWithEmailAndPassword(
-        authPedidos,
-        email,
-        password
-      );
+      await signInWithEmailAndPassword(authPedidos, email, password);
     } catch (error) {
       console.error("Erro no login com email:", error);
       throw error;
     }
   }, []);
 
-  // Cadastro com e-mail e senha
   const registerWithEmail = useCallback(async (name, email, password) => {
     try {
       const result = await createUserWithEmailAndPassword(
@@ -118,12 +116,10 @@ function AuthProvider({ children }) {
         password
       );
 
-      // Atualiza o displayName no Firebase Auth (PERSISTENTE)
       await updateProfile(result.user, {
         displayName: name,
       });
 
-      // Cria o perfil no Firestore
       const newProfile = {
         name,
         email,
@@ -133,17 +129,14 @@ function AuthProvider({ children }) {
       const userRef = doc(dbPedidos, "users", result.user.uid);
       await setDoc(userRef, newProfile);
 
-      // Estados locais
       setUser(result.user);
       setProfile(newProfile);
-
     } catch (error) {
       console.error("Erro no cadastro com email:", error);
       throw error;
     }
   }, []);
 
-  // Logout
   const logout = useCallback(async () => {
     try {
       await signOut(authPedidos);
@@ -154,7 +147,6 @@ function AuthProvider({ children }) {
     }
   }, []);
 
-  // Primeiro nome (vem do Firestore)
   const firstName = useMemo(() => {
     if (!profile?.name) return "";
     return profile.name.split(" ")[0];
