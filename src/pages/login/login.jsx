@@ -236,5 +236,6 @@ const Container = styled.div`
 
 const Logo = styled.img`
   width: 100%;
-  max-width: 250px;
+  max-width: 350px;
+  margin-bottom: 10px;
 `;
