@@ -1,23 +1,19 @@
-import {
-  createContext,
-  useEffect,
-  useState,
-  useCallback,
-  useMemo
-} from "react";
+import { createContext, useState, useEffect, useCallback, useMemo } from "react";
 import t from "prop-types";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import {
-  GithubAuthProvider,
-  signInWithPopup,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  updateProfile,
-  signOut
-} from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { authPedidos, dbPedidos } from "@/services/firebase";
 
+import { loginWithGitHub } from "./github-auth";
+import { loginWithEmail, registerWithEmail } from "./email-auth";
+
+/**
+ * AuthContext
+ *
+ * Este é o contexto principal da autenticação.
+ * Ele fornece informações sobre o usuário, perfil, estado de carregamento
+ * e funções de login, registro e logout para toda a aplicação.
+ */
 const AuthContext = createContext();
 
 function AuthProvider({ children }) {
@@ -25,6 +21,13 @@ function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  /**
+   * useEffect principal de autenticação
+   *
+   * Observa mudanças na autenticação do Firebase (login/logout)
+   * e carrega o perfil do usuário no Firestore. Se o usuário não existir,
+   * cria um perfil padrão.
+   */
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(authPedidos, async (currentUser) => {
       try {
@@ -42,11 +45,12 @@ function AuthProvider({ children }) {
         if (userSnap.exists()) {
           setProfile(userSnap.data());
         } else {
+          // Perfil fallback caso não exista no Firestore.
           const fallbackProfile = {
             name: currentUser.displayName ?? "",
             email: currentUser.email,
             role: "user"
-          }
+          };
 
           await setDoc(userRef, fallbackProfile);
           setProfile(fallbackProfile);
@@ -63,80 +67,12 @@ function AuthProvider({ children }) {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (!user) return;
-
-    const createUserIfNotExists = async () => {
-      try {
-        const userRef = doc(dbPedidos, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-
-        if (userSnap.exists()) return;
-
-        const newProfile = {
-          email: user.email,
-          name: user.displayName ?? "",
-          role: "user",
-        };
-
-        await setDoc(userRef, newProfile);
-        setProfile(newProfile);
-      } catch (error) {
-        console.error("ERRO AO CRIAR PERFIL DO USUÁRIO:", error);
-      }
-    };
-
-    createUserIfNotExists();
-  }, [user]);
-
-  const loginWithGitHub = useCallback(async () => {
-    try {
-      const provider = new GithubAuthProvider();
-      await signInWithPopup(authPedidos, provider);
-    } catch (error) {
-      console.error("Erro no login com GitHub:", error);
-      throw error;
-    }
-  }, []);
-
-  const loginWithEmail = useCallback(async (email, password) => {
-    try {
-      await signInWithEmailAndPassword(authPedidos, email, password);
-    } catch (error) {
-      console.error("Erro no login com email:", error);
-      throw error;
-    }
-  }, []);
-
-  const registerWithEmail = useCallback(async (name, email, password) => {
-    try {
-      const result = await createUserWithEmailAndPassword(
-        authPedidos,
-        email,
-        password
-      );
-
-      await updateProfile(result.user, {
-        displayName: name,
-      });
-
-      const newProfile = {
-        name,
-        email,
-        role: "user"
-      };
-
-      const userRef = doc(dbPedidos, "users", result.user.uid);
-      await setDoc(userRef, newProfile);
-
-      setUser(result.user);
-      setProfile(newProfile);
-    } catch (error) {
-      console.error("Erro no cadastro com email:", error);
-      throw error;
-    }
-  }, []);
-
+  /**
+   * logout
+   *
+   * Função simples que desloga o usuário e limpa os estados
+   * de usuário e perfil. Pensar como "fechar a sessão" do sistema.
+   */
   const logout = useCallback(async () => {
     try {
       await signOut(authPedidos);
@@ -147,6 +83,12 @@ function AuthProvider({ children }) {
     }
   }, []);
 
+  /**
+   * firstName
+   *
+   * Calcula o primeiro nome do usuário com base no perfil.
+   * Útil para saudações ou exibição resumida do nome.
+   */
   const firstName = useMemo(() => {
     if (!profile?.name) return "";
     return profile.name.split(" ")[0];
@@ -168,8 +110,13 @@ function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
+/**
+ * PropTypes
+ *
+ * Garante que o AuthProvider receba um children válido.
+ */
 AuthProvider.propTypes = {
   children: t.node.isRequired
 }

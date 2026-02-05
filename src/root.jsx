@@ -5,7 +5,7 @@ import {
   ThemeProvider as MuiThemeProvider,
   createTheme,
 } from "@mui/material/styles";
-import { AuthProvider, OrderProvider } from "@/contexts";
+import { AuthProvider } from "@/contexts";
 import App from "@/app";
 
 const theme = createTheme();
