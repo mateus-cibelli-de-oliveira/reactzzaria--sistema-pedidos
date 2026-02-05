@@ -5,7 +5,9 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { authPedidos, dbPedidos } from "@/services/firebase";
 
 import { loginWithGitHub } from "./github-auth";
-import { loginWithEmail, registerWithEmail } from "./email-auth";
+import {
+  loginWithEmail, registerWithEmail as registerWithEmailService
+} from "./email-auth";
 
 /**
  * AuthContext
@@ -65,6 +67,26 @@ function AuthProvider({ children }) {
     });
 
     return () => unsubscribe();
+  }, []);
+
+    /**
+   * registerWithEmail
+   *
+   * Faz o cadastro com email e senha e, ao finalizar,
+   * atualiza o estado do contexto para que o nome e perfil
+   * apareçam imediatamente na interface.
+   */
+  const registerWithEmail = useCallback(async (name, email, password) => {
+    const { user, profile } = await registerWithEmailService(
+      name,
+      email,
+      password
+    );
+
+    setUser(user);
+    setProfile(profile);
+
+    return { user, profile };
   }, []);
 
   /**
