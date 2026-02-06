@@ -29,7 +29,7 @@ function HeaderCommon() {
           <Logo />
         </LinkLogo>
       </LogoContainer>
-      <Typography color="inherit">Ola, {firstName} :)</Typography>
+      <Typography color="inherit">Olá, {firstName} :)</Typography>
       <IconButton color="inherit" onClick={handleOpenMenu}>
         <AccountCircle />
       </IconButton>
