@@ -12,15 +12,17 @@ import Logo from "./logo";
 
 function HeaderCommon() {
   const [AnchorElement, setAnchorElement] = useState(null);
-  const { firstName, logout } = useAuth();
+  const { loading, firstName, logout } = useAuth();
+
+  if (loading) return null;
 
   const handleOpenMenu = (e) => {
     setAnchorElement(e.target);
-  };
+  }
 
   const handleClose = () => {
     setAnchorElement(null);
-  };
+  }
 
   return (
     <>
