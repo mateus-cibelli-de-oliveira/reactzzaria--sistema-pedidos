@@ -17,7 +17,7 @@ export default function FormLogin({ handleCancelMode }) {
     setPassword("");
     setError("");
     handleCancelMode?.();
-  };
+  }
 
   // Login com e-mail e senha
   const handleLogin = async () => {

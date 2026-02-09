@@ -21,7 +21,7 @@ export default function FormRegister({ handleCancelMode }) {
     setConfirmPassword("");
     setError("");
     handleCancelMode?.();
-  };
+  }
 
   // Cadastro de usuário
   const handleRegister = async () => {
