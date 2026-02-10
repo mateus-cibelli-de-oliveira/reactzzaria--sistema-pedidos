@@ -36,33 +36,45 @@ function OrderProvider({ children }) {
 
   async function sendOrder() {
     try {
-      console.log("Payload do pedido:", {
-        userId: user?.uid,
-        address,
-        phone,
-        pizzas
-        });
-
-      pizzas.forEach((pizza, index) => {
-        console.log(`Pizza ${index}:`, pizza);
-      });
-
-
-      await addDoc(collection(dbPedidos, "orders"), {
+      const orderPayload = {
         userId: user.uid,
-        createdAt: serverTimestamp(),
-        address,
-        phone,
+        createdAt: serverTimestamp()
+      }
+  
+      if (address) {
+        const { 
+          address: street, number, district, complement, city, state, code 
+        } = address;
+  
+        Object.assign(orderPayload, {
+          ...(street && { address: street }),
+          ...(number && { number }),
+          ...(district && { district }),
+          ...(complement && { complement }),
+          ...(city && { city }),
+          ...(state && { state }),
+          ...(code && { cep: code })
+        });
+      }
+  
+      Object.assign(orderPayload, {
+        status: "pending",
         pizzas: pizzas.map(pizza => ({
           size: pizza.size,
           flavours: pizza.pizzaFlavours,
-          quantity: pizza.quantity
+          quantity: Number(pizza.quantity)
         }))
       });
+  
+      console.log("Payload do pedido:", orderPayload);
+  
+      await addDoc(collection(dbPedidos, "orders"), orderPayload);
+  
+      console.log("Pedido enviado com sucesso!");
     } catch (e) {
-      console.log("erro ao salvar pedido:", e);
+      console.log("Erro ao salvar pedido:", e);
     }
-
+  
     setOrderInProgress(false);
   }
 
