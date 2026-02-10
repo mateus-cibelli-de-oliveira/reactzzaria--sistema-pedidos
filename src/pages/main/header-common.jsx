@@ -31,7 +31,9 @@ function HeaderCommon() {
           <Logo />
         </LinkLogo>
       </LogoContainer>
-      <Typography color="inherit">Olá, {firstName} :)</Typography>
+      <Typography color="inherit" sx={{ mr: 1 }}>
+        Olá, {firstName} :)
+      </Typography>
       <IconButton color="inherit" onClick={handleOpenMenu}>
         <AccountCircle />
       </IconButton>

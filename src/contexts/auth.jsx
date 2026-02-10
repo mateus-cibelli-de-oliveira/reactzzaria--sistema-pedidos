@@ -121,11 +121,24 @@ function AuthProvider({ children }) {
     return profile.name.split(" ")[0];
   }, [profile]);
 
+  /**
+   * role
+   *
+   * Define o tipo de permissão do usuário dentro do sistema.
+   * Por padrão, caso não exista perfil carregado, assume "user".
+   * Esse valor é usado para controlar acesso a telas e funcionalidades
+   * administrativas.
+   */
+  const role = useMemo(() => {
+    return profile?.role || "user";
+  }, [profile]);
+
   return (
     <AuthContext.Provider
       value={{
         user,
         profile,
+        role,
         loading,
         firstName,
         loginWithGitHub,

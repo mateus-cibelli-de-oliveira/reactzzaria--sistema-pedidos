@@ -17,14 +17,19 @@ import { singularOrPlural } from "@/utils";
 import { CHOOSE_PIZZA_FLAVOURS } from "@/routes";
 
 const ChoosePizzaSize = () => {
-  const { firstName } = useAuth();
+  const { firstName, role } = useAuth();
   const pizzasSizes = useCollection("pizzasSizes");
+
+  const ADMIN_APP_URL = import.meta.env.VITE_ADMIN_APP_URL;
 
   if (!pizzasSizes) {
     return (
       <CenteredWrapper>
         <Content>
-          <NoData>Carregando tamanhos...</NoData>
+          <NoDataContainer>
+            <NoDataTitle>Carregando...</NoDataTitle>
+            <NoDataText>Buscando os tamanhos disponíveis.</NoDataText>
+          </NoDataContainer>
         </Content>
       </CenteredWrapper>
     );
@@ -34,7 +39,21 @@ const ChoosePizzaSize = () => {
     return (
       <CenteredWrapper>
         <Content>
-          <NoData>Não há dados.</NoData>
+          <NoDataContainer>
+            <NoDataTitle>Nenhum tamanho cadastrado :(</NoDataTitle>
+
+            <NoDataText>
+              {role === "admin"
+                ? "Para começar a receber pedidos, você precisa cadastrar os tamanhos das pizzas."
+                : "Ainda não existem tamanhos cadastrados. Por favor, aguarde ou tente mais tarde."}
+            </NoDataText>
+
+            {role === "admin" && (
+              <GoToRegisterButton href={`${ADMIN_APP_URL}/tamanhos`}>
+                Cadastrar tamanhos
+              </GoToRegisterButton>
+            )}
+          </NoDataContainer>
         </Content>
       </CenteredWrapper>
     );
@@ -137,14 +156,43 @@ const CenteredWrapper = styled.div`
   align-items: center;
 `;
 
-const NoData = styled(Typography).attrs({
-  variant: "h6",
+const NoDataContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+`;
+
+const NoDataTitle = styled(Typography).attrs({
+  variant: "h5",
 })`
   && {
-    margin-top: 40px;
-    text-align: center;
-    font-weight: bold;
+    font-weight: 700;
+  }
+`;
+
+const NoDataText = styled(Typography).attrs({
+  variant: "body1",
+})`
+  && {
     color: ${({ theme }) => theme.palette.grey[600]};
+  }
+`;
+
+const GoToRegisterButton = styled.a`
+  width: fit-content;
+  display: inline-block;
+  margin: 0 auto;
+  margin-top: 12px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  color: ${({ theme }) => theme.palette.common.white};
+  background: ${({ theme }) => theme.palette.primary.main};
+
+  &:hover {
+    background: ${({ theme }) => theme.palette.primary.dark};
   }
 `;
 
