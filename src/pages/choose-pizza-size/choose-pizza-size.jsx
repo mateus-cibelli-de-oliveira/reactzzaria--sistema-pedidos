@@ -20,12 +20,24 @@ const ChoosePizzaSize = () => {
   const { firstName } = useAuth();
   const pizzasSizes = useCollection("pizzasSizes");
 
-  if(!pizzasSizes) {
-    return "Carregando tamanhos...";
+  if (!pizzasSizes) {
+    return (
+      <CenteredWrapper>
+        <Content>
+          <NoData>Carregando tamanhos...</NoData>
+        </Content>
+      </CenteredWrapper>
+    );
   }
 
-  if(pizzasSizes.length === 0) {
-    return "Não há dados."
+  if (pizzasSizes.length === 0) {
+    return (
+      <CenteredWrapper>
+        <Content>
+          <NoData>Não há dados.</NoData>
+        </Content>
+      </CenteredWrapper>
+    );
   }
 
   return (
@@ -115,6 +127,24 @@ const PizzaText = styled(Typography).attrs({
     align-items: center;
     position: relative;
     z-index: 1;
+  }
+`;
+
+const CenteredWrapper = styled.div`
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const NoData = styled(Typography).attrs({
+  variant: "h6",
+})`
+  && {
+    margin-top: 40px;
+    text-align: center;
+    font-weight: bold;
+    color: ${({ theme }) => theme.palette.grey[600]};
   }
 `;
 

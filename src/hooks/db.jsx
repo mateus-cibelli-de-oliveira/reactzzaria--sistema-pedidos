@@ -16,7 +16,7 @@ function useCollection(collectionName) {
       }));
 
       setData(docs);
-    };
+    }
 
     loadData();
   }, [collectionName]);

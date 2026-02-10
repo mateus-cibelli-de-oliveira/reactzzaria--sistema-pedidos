@@ -17,7 +17,7 @@ function HeaderCommon() {
   if (loading) return null;
 
   const handleOpenMenu = (e) => {
-    setAnchorElement(e.target);
+    setAnchorElement(e.currentTarget);
   }
 
   const handleClose = () => {
@@ -39,6 +39,18 @@ function HeaderCommon() {
         open={Boolean(AnchorElement)}
         onClose={handleClose}
         anchorEl={AnchorElement}
+        anchorOrigin={{
+        vertical: "bottom"
+        }}
+        transformOrigin={{
+          vertical: "top"
+        }}
+        PaperProps={{
+          sx: {
+            mt: 0.6,
+            ml: 0.1
+          }
+        }}
       >
         <MenuItem onClick={logout}>Sair</MenuItem>
       </Menu>
