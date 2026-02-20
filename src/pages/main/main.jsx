@@ -6,6 +6,7 @@ import Header from "./header";
 const ChoosePizzaSize = lazy(() => import("@/pages/choose-pizza-size"));
 const ChoosePizzaFlavours = lazy(() => import("@/pages/choose-pizza-flavours"));
 const ChoosePizzaQuantity = lazy(() => import("@/pages/choose-pizza-quantity"));
+const OrderHistory = lazy(() => import("@/pages/order-history"));
 const Checkout = lazy(() => import("@/pages/checkout"));
 const CheckoutConfirmation = lazy(
   () => import("@/pages/checkout-confirmation")
@@ -22,6 +23,10 @@ const Main = () => (
         <Route
           path={routes.HOME}
           element={<ChoosePizzaSize />}
+        />
+        <Route
+          path={routes.ORDER_HISTORY}
+          element={<OrderHistory />}
         />
         <Route
           path={routes.CHOOSE_PIZZA_FLAVOURS}

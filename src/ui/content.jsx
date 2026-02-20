@@ -15,14 +15,17 @@ Content.propTypes = {
 }
 
 const Main = styled.main`
-  padding-top: calc(64px + 20px); /* topo */
-  padding-left: 20px; /* lateral esquerda */
-  padding-right: 20px; /* lateral direita */
-  padding-bottom: 20px; /* parte de baixo */
-  flex: 1; /* ocupa o espaço restante */
+  padding-top: calc(64px + ${({ theme }) => theme.spacing(4)});
+  padding-left: ${({ theme }) => theme.spacing(4)};
+  padding-right: ${({ theme }) => theme.spacing(4)};
+  padding-bottom: ${({ theme }) => theme.spacing(4)};
+  flex: 1;
 
   @media (max-width: 600px) {
-    padding-top: calc(56px + 20px);
+    padding-top: calc(56px + ${({ theme }) => theme.spacing(3)});
+    padding-left: ${({ theme }) => theme.spacing(2)};
+    padding-right: ${({ theme }) => theme.spacing(2)};
+    padding-bottom: ${({ theme }) => theme.spacing(3)};
   }
 `;
 

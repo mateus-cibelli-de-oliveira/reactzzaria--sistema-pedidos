@@ -17,10 +17,10 @@ function Checkout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!order.pizzas.length) {
+    if (!order.pizzas || order.pizzas.length === 0) {
       navigate(HOME, { replace: true });
     }
-  }, [order.pizzas.length, navigate]);
+  }, [order.pizzas, navigate]);
 
   return (
     <>

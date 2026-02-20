@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useMemo } from "react";
 import t from "prop-types";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "@/hooks";
@@ -34,18 +34,25 @@ function OrderProvider({ children }) {
     addPizza((pizzas) => pizzas.filter((p) => p.id !== id));
   }
 
+  function clearCurrentOrder() {
+    addPizza([]);
+    addAddress("");
+    addPhone("");
+    setOrderInProgress(false);
+  }
+
   async function sendOrder() {
     try {
       const orderPayload = {
         userId: user.uid,
         createdAt: serverTimestamp()
       }
-  
+
       if (address) {
-        const { 
-          address: street, number, district, complement, city, state, code 
+        const {
+          address: street, number, district, complement, city, state, code
         } = address;
-  
+
         Object.assign(orderPayload, {
           ...(street && { address: street }),
           ...(number && { number }),
@@ -56,7 +63,7 @@ function OrderProvider({ children }) {
           ...(code && { cep: code })
         });
       }
-  
+
       Object.assign(orderPayload, {
         status: "pending",
         pizzas: pizzas.map(pizza => ({
@@ -65,33 +72,36 @@ function OrderProvider({ children }) {
           quantity: Number(pizza.quantity)
         }))
       });
-  
+
       console.log("Payload do pedido:", orderPayload);
-  
+
       await addDoc(collection(dbPedidos, "orders"), orderPayload);
-  
+
       console.log("Pedido enviado com sucesso!");
     } catch (e) {
       console.log("Erro ao salvar pedido:", e);
     }
-  
+
     setOrderInProgress(false);
   }
 
+  const contextValue = useMemo(() => ({
+    order: {
+      pizzas,
+      address,
+      phone,
+      orderInProgress
+    },
+    addPizzaToOrder,
+    addAddress,
+    addPhone,
+    removePizzaFromOrder,
+    clearCurrentOrder,
+    sendOrder
+  }), [pizzas, address, phone, orderInProgress]);
+
   return (
-    <OrderContext.Provider value={{
-      order: {
-        pizzas,
-        address,
-        phone,
-        orderInProgress
-      },
-      addPizzaToOrder,
-      addAddress,
-      addPhone,
-      removePizzaFromOrder,
-      sendOrder
-    }}>
+    <OrderContext.Provider value={contextValue}>
       {children}
     </OrderContext.Provider>
   );

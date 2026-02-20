@@ -7,7 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import { useAuth } from "@/hooks";
-import { HOME } from "@/routes";
+import { HOME, ORDER_HISTORY } from "@/routes";
 import Logo from "./logo";
 
 function HeaderCommon() {
@@ -54,6 +54,22 @@ function HeaderCommon() {
           }
         }}
       >
+        <MenuItem
+          component={Link}
+          to={HOME}
+          onClick={handleClose}
+        >
+          Página inicial
+        </MenuItem>
+
+        <MenuItem
+          component={Link}
+          to={ORDER_HISTORY}
+          onClick={handleClose}
+        >
+          Histórico de pedidos
+        </MenuItem>
+
         <MenuItem onClick={logout}>Sair</MenuItem>
       </Menu>
     </>

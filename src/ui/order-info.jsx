@@ -22,7 +22,7 @@ function OrderInfo({ showOptions }) {
           <ListItem key={pizza.id}>
             <Typography>
               <b>{quantity}</b> {singularOrPlural(quantity, "pizza", "pizzas")}{" "}
-              <b>{name.toUpperCase()}</b> — ({slices}{" "}
+              <b>{name?.toUpperCase()}</b> - ({slices}{" "}
               {singularOrPlural(slices, "fatia", "fatias")}, {flavours}{" "}
               {singularOrPlural(flavours, "sabor", "sabores")})
               <br />

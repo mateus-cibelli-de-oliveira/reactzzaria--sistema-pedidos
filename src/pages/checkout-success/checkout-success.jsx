@@ -6,7 +6,7 @@ import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import { Content, H4, H6, OrderInfo, Divider } from "@/ui";
 import { useAuth, useOrder } from "@/hooks";
-import { HOME } from "@/routes";
+import { HOME, ORDER_HISTORY } from "@/routes";
 import FooterCheckout from "@/pages/checkout/footer-checkout";
 
 function CheckoutSuccess() {
@@ -50,14 +50,26 @@ function CheckoutSuccess() {
       </Content>
 
       <FooterCheckout justifyContent="center">
-        <Button
-          color="secondary"
-          size="large"
-          component={Link}
-          to={HOME}
-        >
-          {"<"} Voltar para a página inicial
-        </Button>
+        <ButtonsContainer>
+          <Button
+            color="secondary"
+            size="large"
+            component={Link}
+            to={HOME}
+          >
+            {"<"} Voltar para a página inicial
+          </Button>
+
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            component={Link}
+            to={ORDER_HISTORY}
+          >
+            Ver histórico de pedidos
+          </Button>
+        </ButtonsContainer>
       </FooterCheckout>
     </>
   );
@@ -75,6 +87,12 @@ const PaperContainer = styled(Paper)`
   && {
     padding: ${({ theme }) => theme.spacing(3)};
   }
+`;
+
+const ButtonsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing(1)};
 `;
 
 export default CheckoutSuccess;
